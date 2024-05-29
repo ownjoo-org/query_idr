@@ -15,8 +15,8 @@ options:
 
 
 # example: look up host with vulnerability details
-`python3 query_idr.py --api-key MyApiKey`
-`python3 query_idr.py --api-key MyApiKey --domain us.api.insight.rapid7.com`
+`python3 query_idr.py --api-key MyApiKey`<br>
+`python3 query_idr.py --api-key MyApiKey --domain us.api.insight.rapid7.com`<br>
 
 # references: 
-https://us.api.insight.rapid7.com/graphql
+https://us.api.insight.rapid7.com/graphql<br>
