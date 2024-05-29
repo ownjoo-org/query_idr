@@ -63,14 +63,20 @@ ASSETS_QUERY = '''
 '''
 
 
-def list_organizations(session: Session, domain: str) -> Generator[str, None, None]:
+global session
+global idr_host
+
+
+def list_organizations() -> Generator[str, None, None]:
+    global session
+    global idr_host
     try:
         body_params: dict = {
             'query': ORGANIZATIONS_QUERY,
             'variables': {'first': PAGE_SIZE},
         }
         resp_orgs_query: Response = session.post(
-            url=f'https://{domain}/graphql',
+            url=f'https://{idr_host}/graphql',
             json=body_params,
             proxies=proxies,
         )
@@ -84,7 +90,9 @@ def list_organizations(session: Session, domain: str) -> Generator[str, None, No
         raise exc_query
 
 
-def list_assets_per_org(session: Session, domain: str, org_id: str) -> Optional[dict]:
+def list_assets_per_org(org_id: str) -> Optional[dict]:
+    global session
+    global idr_host
     cursor: Optional[str] = None
     try:
         # first page with no cursor
@@ -99,7 +107,7 @@ def list_assets_per_org(session: Session, domain: str, org_id: str) -> Optional[
         is_done: bool = False
         while not is_done:
             resp_asset_query: Response = session.post(
-                url=f'https://{domain}/graphql',
+                url=f'https://{idr_host}/graphql',
                 json=body_params,
                 proxies=proxies,
             )
@@ -118,12 +126,11 @@ def list_assets_per_org(session: Session, domain: str, org_id: str) -> Optional[
         raise exc_query
 
 
-def main(
-        domain: str,
-        api_key: str,
-        proxies: Optional[dict] = None,
-) -> Generator[dict, None, None]:
+def main(domain: str, api_key: str, proxies: Optional[dict] = None) -> Generator[dict, None, None]:
+    global session
+    global idr_host
     session = Session()
+    idr_host = domain
 
     headers: dict = {
         'Accept': 'application/json',
@@ -135,9 +142,9 @@ def main(
     session.proxies = proxies
 
     try:
-        for org_id in list_organizations(session=session, domain=domain):
+        for org_id in list_organizations():
             if org_id:
-                yield from list_assets_per_org(session=session, domain=domain, org_id=org_id)
+                yield from list_assets_per_org(org_id=org_id)
     except Exception as exc_all:
         print(exc_all)
         raise exc_all
