@@ -19,4 +19,4 @@ options:
 `python3 query_idr.py --api-key MyApiKey --domain us.api.insight.rapid7.com`
 
 # references: 
-https://docs.rapid7.com/insightidr/insightidr-rest-api/<br>
+https://us.api.insight.rapid7.com/graphql
