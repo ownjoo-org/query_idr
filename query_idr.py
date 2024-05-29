@@ -15,7 +15,8 @@ query($first: Int!){
             }
         } 
     }
-}'''
+}
+'''
 
 FIRST_QUERY: str = 'query($orgId: String!, $first: Int!)'
 FIRST_ASSETS: str = 'assets(first: $first)'
