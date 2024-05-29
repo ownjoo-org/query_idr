@@ -14,88 +14,54 @@ query($first: Int!){
     edges{ 
         node{
                 id
-                name
             }
         } 
     }
 }'''
 
-ASSETS_QUERY = '''
-query($orgId: String!, $first: Int!) {
-  organization(id: $orgId) {
-    assets(first: $first) {
-      edges {
-        cursor
-        node {
-          id
-          host {
-            vendor
-            description
-            hostNames {
-              name
-            }
-            primaryAddress {
-              ip
-              mac
-            }
-            attributes {
-              key
-              value
-            }
-            isEphemeral
-          }
-          publicIpAddress
-          platform
-          agent {
-            agentStatus
-            deployTime
-            agentLastUpdateTime
-            agentSemanticVersion
-          }
-        }
-      }
-    }
-  }
-}
-'''
+FIRST_QUERY: str = 'query($orgId: String!, $first: Int!)'
+FIRST_ASSETS: str = 'assets(first: $first)'
+CURSOR_QUERY: str = 'query($orgId: String!, $first: Int!, $cursor: String!)'
+CURSOR_ASSETS: str = 'assets(first: $first, after: $cursor)'
 
-ASSETS_CURSOR_QUERY = '''
-query($orgId: String!, $first: Int!, $cursor: String!) {
-  organization(id: $orgId) {
-    assets(first: $first, after: $cursor) {
-      edges {
-        cursor      
-        node {
+ASSETS_QUERY = '''
+{query} {{
+  organization(id: $orgId) {{
+    {assets} {{
+      edges {{
+        cursor
+        node {{
           id
-          host {
+          host {{
             vendor
             description
-            hostNames {
+            hostNames {{
               name
-            }
-            primaryAddress {
+            }}
+            primaryAddress {{
               ip
               mac
-            }
-            attributes {
+            }}
+            attributes {{
               key
               value
-            }
+            }}
             isEphemeral
-          }
+          }}
           publicIpAddress
           platform
-          agent {
+          agent {{
             agentStatus
             deployTime
             agentLastUpdateTime
             agentSemanticVersion
-          }
-        }
-      }
-    }
-  }
-}'''
+          }}
+        }}
+      }}
+    }}
+  }}
+}}
+'''
 
 
 def list_organizations(session: Session, domain: str) -> Generator[str, None, None]:
@@ -122,29 +88,17 @@ def list_organizations(session: Session, domain: str) -> Generator[str, None, No
 def list_assets_per_org(session: Session, domain: str, org_id: str) -> Optional[dict]:
     cursor: Optional[str] = None
     try:
-        # get first page
+        # first page with no cursor
         body_params: dict = {
-            'query': ASSETS_QUERY,
-            'variables': {'first': PAGE_SIZE, 'orgId': org_id},
+            'query': ASSETS_QUERY.format(query=FIRST_QUERY, assets=FIRST_ASSETS),
+            'variables': {
+                'first': PAGE_SIZE,
+                'orgId': org_id
+            },
         }
-        resp_asset_query: Response = session.post(
-            url=f'https://{domain}/graphql',
-            json=body_params,
-            proxies=proxies,
-        )
-        resp_asset_query.raise_for_status()
-        data_query: dict = resp_asset_query.json()
-        edges: list = data_query.get('data').get('assets').get('edges')
-        for edge in edges:
-            cursor = edge.get('cursor')
-            yield edge
 
-        # get subsequent pages
-        while cursor and not len(edges) < PAGE_SIZE:
-            body_params: dict = {
-                'query': ASSETS_CURSOR_QUERY,
-                'variables': {'first': PAGE_SIZE, 'orgId': org_id, 'cursor': cursor},
-            }
+        is_done: bool = False
+        while not is_done:
             resp_asset_query: Response = session.post(
                 url=f'https://{domain}/graphql',
                 json=body_params,
@@ -155,7 +109,10 @@ def list_assets_per_org(session: Session, domain: str, org_id: str) -> Optional[
             edges = data_query.get('data').get('organizations').get('assets').get('edges')
             for edge in edges:
                 cursor = edge.get('cursor')
-                yield edge
+                yield edge.get('node')
+            is_done = len(edges) < PAGE_SIZE
+            body_params['query'] = ASSETS_QUERY.format(query=CURSOR_QUERY, assets=CURSOR_ASSETS)
+            body_params['variables']['cursor'] = cursor
 
     except Exception as exc_query:
         print(f'{exc_query}')
