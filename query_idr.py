@@ -1,5 +1,3 @@
-# pylint: disable=missing-docstring
-
 import argparse
 import json
 
@@ -119,7 +117,6 @@ def list_assets_per_org(session: Session, domain: str, org_id: str) -> Optional[
         raise exc_query
 
 
-# pylint: disable=too-many-arguments,too-many-locals, broad-except
 def main(
         domain: str,
         api_key: str,
