@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from typing import Optional, Union, Generator
+from typing import Optional, Generator
 from requests import Session, Response
 
 PAGE_SIZE: int = 1000
