@@ -122,7 +122,7 @@ def main(
         domain: str,
         api_key: str,
         proxies: Optional[dict] = None,
-) -> Union[None, str, list, dict]:
+) -> Generator[dict, None, None]:
     session = Session()
 
     headers: dict = {
@@ -175,13 +175,11 @@ if __name__ == '__main__':
         except Exception as exc_json:
             print(f'WARNING: failure parsing proxies: {exc_json}: proxies provided: {proxies}')
 
-    result = main(
+    for asset in main(
         domain=args.domain,
         api_key=args.password,
         proxies=proxies,
-    )
-
-    if result:
-        print(json.dumps(result, indent=4))
+    ):
+        print(json.dumps(asset, indent=4))
     else:
         print('No results found')
