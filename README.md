@@ -4,12 +4,12 @@ query Rapid7 IDR API with graphql
 # usage
 ```
 $ python main.py --help
-usage: query_idr.py [-h] --api-key APIKEY [--domain DOMAIN] [--proxies PROXIES]
+usage: query_idr.py [-h] --apikey APIKEY [--domain DOMAIN] [--proxies PROXIES]
 
 options:
   -h, --help                     show this help message and exit
   --domain DOMAIN                The FQDN/IP for your InsightVM server (not full URL)
-  --api-key APIKEY               The password for the username
+  --apikey APIKEY                The password for the username
   --proxies PROXIES              JSON structure specifying 'http' and 'https' proxy URLs
 ```
 

@@ -113,7 +113,7 @@ def list_assets_per_org(org_id: str) -> Optional[dict]:
             )
             resp_asset_query.raise_for_status()
             data_query: dict = resp_asset_query.json()
-            edges = data_query.get('data').get('organizations').get('assets').get('edges')
+            edges = data_query.get('data').get('organization').get('assets').get('edges')
             for edge in edges:
                 cursor = edge.get('cursor')
                 yield edge.get('node')
@@ -160,7 +160,7 @@ if __name__ == '__main__':
         default='us.api.insight.rapid7.com'
     )
     parser.add_argument(
-        '--api-key',
+        '--apikey',
         default=None,
         type=str,
         required=True,
@@ -184,7 +184,7 @@ if __name__ == '__main__':
 
     for asset in main(
         domain=args.domain,
-        api_key=args.password,
+        api_key=args.apikey,
         proxies=proxies,
     ):
         print(json.dumps(asset, indent=4))
