@@ -1,11 +1,14 @@
 # query_idr
 query Rapid7 IDR API with graphql
 
-# NOTE:
+# SECURITY NOTE:
+I wrote the .py file.  You have my word that they don't do anything nefarious.  Even so, I recommend that you perform
+your own static analysis and supply chain testing before use.  Many libraries are imported that are not in my own control.
+
 The executables provided here were built with a nifty python package https://nuitka.net/. 
 
-While I have no indication that there are security risks with the tool, I have not security tested them
-and cannot assure you that they are safe.  USE AT YOUR OWN RISK!! 
+While I have no indication that there are security risks with the tool, I did not write it and have not security tested 
+it and; therefore, cannot assure you that they are safe.  USE AT YOUR OWN RISK!! 
 
 # usage
 ```
