@@ -1,6 +1,12 @@
 # query_idr
 query Rapid7 IDR API with graphql
 
+# NOTE:
+The executables provided here were built with a nifty python package https://nuitka.net/. 
+
+While I have no indication that there are security risks with the tool, I have not security tested them
+and cannot assure you that they are safe.  USE AT YOUR OWN RISK!! 
+
 # usage
 ```
 $ python main.py --help
